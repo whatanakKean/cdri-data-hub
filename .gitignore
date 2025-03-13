@@ -1,0 +1,35 @@
+# Python virtual environment folder
+venv/
+
+# Python bytecode files
+*.pyc
+*.pyo
+
+# Flask instance folder
+instance/
+
+# Flask specific logs (if any)
+*.log
+
+# Ignore other sensitive files
+*.env
+
+
+# Node modules (big directory with all dependencies)
+node_modules/
+
+# Build output folder (after running `npm run build`)
+build/
+
+# npm-debug log
+npm-debug.log
+
+# React specific environment variable file
+.env
+
+# Local IDE files (like VSCode or WebStorm settings)
+.vscode/
+.idea/
+
+# MacOS specific files
+.DS_Store
