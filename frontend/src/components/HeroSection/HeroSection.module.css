@@ -1,0 +1,85 @@
+.root {
+    background-color: #11284b;
+    background-size: cover;
+    background-position: center;
+    background-image: linear-gradient(250deg, rgba(130, 201, 30, 0) 0%, #062343 70%),
+      url(https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8&auto=format&fit=crop&w=1080&q=80);
+    padding-top: calc(32px * 3);
+    padding-bottom: calc(32px * 3);
+  }
+  
+  .inner {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  @media (max-width: 768px) {
+    .inner {
+      flex-direction: column;
+    }
+  }
+  
+  .image {
+    display: block;
+  }
+  
+  @media (max-width: 768px) {
+    .image {
+      display: none;
+    }
+  }
+  
+  .content {
+    padding-top: calc(32px * 2);
+    padding-bottom: calc(32px * 2);
+    margin-right: calc(32px * 3);
+  }
+  
+  @media (max-width: 768px) {
+    .content {
+      margin-right: 0;
+    }
+  }
+  
+  .title {
+    color: white;
+    font-family: "Greycliff CF", sans-serif;
+    font-weight: 900;
+    line-height: 1.05;
+    max-width: 500px;
+    font-size: 48px;
+  }
+  
+  @media (max-width: 768px) {
+    .title {
+      max-width: 100%;
+      font-size: 34px;
+      line-height: 1.15;
+    }
+  }
+  
+  .description {
+    color: white;
+    opacity: 0.75;
+    max-width: 500px;
+  }
+  
+  @media (max-width: 768px) {
+    .description {
+      max-width: 100%;
+    }
+  }
+  
+  .control {
+    padding-left: 50px;
+    padding-right: 50px;
+    font-family: "Greycliff CF", sans-serif;
+    font-size: 22px;
+  }
+  
+  @media (max-width: 768px) {
+    .control {
+      width: 100%;
+    }
+  }
+  
