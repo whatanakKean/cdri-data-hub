@@ -1,8 +1,7 @@
 // https://ui.mantine.dev/category/footers/
 
 import { IconBrandInstagram, IconBrandTwitter, IconBrandYoutube } from '@tabler/icons-react';
-import { ActionIcon, Container, Group, Text } from '@mantine/core';
-import { MantineLogo } from '@mantinex/mantine-logo';
+import { ActionIcon, Container, Group, Text, Anchor } from '@mantine/core';
 import classes from './FooterMenu.module.css';
 
 const data = [
@@ -61,16 +60,19 @@ export function FooterMenu() {
     <footer className={classes.footer}>
       <Container className={classes.inner}>
         <div className={classes.logo}>
-          <MantineLogo size={30} />
-          <Text size="xs" c="dimmed" className={classes.description}>
-            Build fully functional accessible web applications faster than ever
-          </Text>
+        <Anchor href="/">
+            <img 
+              src="https://cdri.org.kh/storage/images/CDRI%20Logo_1704186788.png" 
+              alt="CDRI Logo"
+              height="50"
+            />
+          </Anchor>
         </div>
         <div className={classes.groups}>{groups}</div>
       </Container>
       <Container className={classes.afterFooter}>
         <Text c="dimmed" size="sm">
-          © 2020 mantine.dev. All rights reserved.
+          Copyright © 2025 CDRI. All rights reserved.
         </Text>
 
         <Group gap={0} className={classes.social} justify="flex-end" wrap="nowrap">

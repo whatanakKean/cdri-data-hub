@@ -1,3 +1,5 @@
+// https://ui.mantine.dev/category/headers/
+
 import {
   IconBook,
   IconChartPie3,
@@ -21,11 +23,13 @@ import {
   ScrollArea,
   SimpleGrid,
   Text,
+  Image,
   ThemeIcon,
   UnstyledButton,
   useMantineTheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { MantineLogo } from '@mantinex/mantine-logo';
 import classes from './HeaderMenu.module.css';
 
 const mockdata = [
@@ -88,13 +92,14 @@ export function HeaderMenu() {
     <Box>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
-          <Anchor href="/" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-            <img 
-              src="https://cdri.org.kh/storage/images/CDRI%20Logo_1704186788.png" 
-              alt="CDRI Logo"
-              height="50"
-            />
-          </Anchor>
+          	<a href="/">
+              <Image 
+                src="/CDRI Logo_1704186788.png" 
+                alt="CDRI Logo"
+                height={50}
+              />
+            </a>
+          
 
           <Group h="100%" gap={0} visibleFrom="sm">
             <a href="/" className={classes.link}>
@@ -176,17 +181,17 @@ export function HeaderMenu() {
           <UnstyledButton className={classes.link} onClick={toggleLinks}>
             <Center inline>
               <Box component="span" mr={5}>
-                Sectors
+                Features
               </Box>
               <IconChevronDown size={16} color={theme.colors.blue[6]} />
             </Center>
           </UnstyledButton>
           <Collapse in={linksOpened}>{links}</Collapse>
           <a href="#" className={classes.link}>
-            Data Explorer
+            Learn
           </a>
           <a href="#" className={classes.link}>
-            About
+            Academy
           </a>
 
           <Divider my="sm" />

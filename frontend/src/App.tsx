@@ -18,7 +18,7 @@ const App: React.FC = () => {
       <HeaderMenu />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/testing" element={<DataByGroup />} />
+          <Route path="/data" element={<DataByGroup />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       <FooterMenu />
