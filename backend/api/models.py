@@ -4,6 +4,7 @@ import json
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -79,18 +80,13 @@ class JWTTokenBlocklist(db.Model):
         db.session.add(self)
         db.session.commit()
 
-from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+class BaseModel(db.Model):
+    __abstract__ = True
 
-db = SQLAlchemy()
-
-class EducationData(db.Model):
-    __tablename__ = 'education_data'
-
-    id = db.Column(db.Integer(), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     province = db.Column(db.String(255), nullable=True)
     series_name = db.Column(db.String(255), nullable=True)
-    indicator_value = db.Column(db.Float(), nullable=True)
+    indicator_value = db.Column(db.Float, nullable=True)
     indicator = db.Column(db.String(255), nullable=True)
     year = db.Column(db.String(4), nullable=True)
     series_code = db.Column(db.String(255), nullable=True)
@@ -104,10 +100,8 @@ class EducationData(db.Model):
     tag = db.Column(db.String(255), nullable=True)
     filters = db.Column(db.String(255), nullable=True)
 
-    def __repr__(self):
-        return f"EducationData({self.province}, {self.series_name}, {self.indicator}, {self.year})"
-
     def save(self):
+        """Save instance to DB."""
         db.session.add(self)
         db.session.commit()
 
@@ -118,24 +112,17 @@ class EducationData(db.Model):
     @classmethod
     def get_by_province(cls, province):
         return cls.query.filter_by(province=province).all()
-    
+
     @classmethod
     def get_data(cls, **filters):
         query = cls.query
-        
-        # Apply filters for regular columns (e.g. 'province', 'sector', etc.)
         for column, value in filters.items():
-            if value and column != "filters":  # Skip if the column is filters (to be handled separately)
+            if value and column != "filters":
                 query = query.filter(getattr(cls, column) == value)
-
-        # Apply filters for the 'filters' JSON column (if specified)
-        if 'filters' in filters:
-            for key, value in filters['filters'].items():
-                query = query.filter(cls.filters[key].astext == value)  # Filter by key-value in the JSON column
-
         return query.all()
 
-    def toDICT(self):
+    def to_dict(self):
+        filters_dict = json.loads(self.filters) if self.filters else {}
         return {
             'id': self.id,
             'province': self.province,
@@ -152,8 +139,18 @@ class EducationData(db.Model):
             'longitude': self.longitude,
             'indicator_unit': self.indicator_unit,
             'tag': self.tag,
-            'filters': self.filters
+            **filters_dict
         }
 
     def toJSON(self):
         return self.to_dict()
+
+# Define child models dynamically bound to tables
+class EducationData(BaseModel):
+    __tablename__ = 'education_data'
+
+class AgricultureData(BaseModel):
+    __tablename__ = 'agriculture_data'
+
+class EconomicData(BaseModel):
+    __tablename__ = 'economic_data'

@@ -1,11 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Select, Accordion, AccordionItem, AccordionControl, AccordionPanel, Group, Text, Paper, Tabs } from '@mantine/core';
 import ReactECharts from 'echarts-for-react';
 import { EChartsOption } from 'echarts';
 import { IconMap, IconChartBar, IconTable } from '@tabler/icons-react';
+import { fetchData } from '../../services/api';
 
 const DataByGroup: React.FC = () => {
     const [activeTab, setActiveTab] = useState("visualization");
+    const [data, setData] = useState<any[]>([]);
+    
+    useEffect(() => {
+        const getData = async () => {
+            try {
+                const result = await fetchData("Agriculture", "Paddy Rice Price");
+                console.log('Fetched data:', result);
+                setData(result);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        getData();
+    }, []);
+
     const option: EChartsOption = {
         title: {
             text: 'Stacked Area Chart',
@@ -167,7 +184,11 @@ const DataByGroup: React.FC = () => {
                         </Tabs.List>
 
                         <Tabs.Panel value="map">
-                            <div>Map Content Goes Here</div>
+                            {data.length > 0 ? (
+                                <pre>{JSON.stringify(data, null, 2)}</pre>
+                            ) : (
+                                <div>Loading data...</div>
+                            )}
                         </Tabs.Panel>
                         <Tabs.Panel value="visualization">
                             <ReactECharts option={option} style={{ height: 400, paddingTop: 20 }} />
