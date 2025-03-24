@@ -7,7 +7,7 @@ from flask_restx import Api, Resource, fields
 
 import jwt
 
-from .models import db, Users, JWTTokenBlocklist
+from .models import db, Users, JWTTokenBlocklist, EducationData
 from .config import BaseConfig
 import requests
 
@@ -31,6 +31,14 @@ user_edit_model = rest_api.model('UserEditModel', {"userID": fields.String(requi
                                                    "username": fields.String(required=True, min_length=2, max_length=32),
                                                    "email": fields.String(required=True, min_length=4, max_length=64)
                                                    })
+
+query_model = rest_api.model('QueryModel', {
+    'series_name': fields.String(required=False, description="Series Name"),
+    'sector': fields.String(required=False, description="Sector"),
+    'subsector_1': fields.String(required=False, description="Subsector 1"),
+    'subsector_2': fields.String(required=False, description="Subsector 2"),
+})
+
 
 
 """
@@ -77,11 +85,38 @@ def token_required(f):
 """
     Flask-Restx routes
 """
-
-@rest_api.route('/test')
-class MyRoute(Resource):
+    
+# Define the resource class to handle the GET request
+@rest_api.route('/query')
+class EducationDataQuery(Resource):
+    @rest_api.expect(query_model)
     def get(self):
-        return {"message": "Hello, world!"}
+
+        # Get query parameters from the URL
+        data = rest_api.payload
+
+        # Call the `query` method of the EducationData model
+        series_name = data.get('series_name', None)
+        sector = data.get('sector', None)
+        subsector_1 = data.get('subsector_1', None)
+        subsector_2 = data.get('subsector_2', None)
+
+        filtered_data = EducationData.get_data(
+            series_name=series_name,
+            sector=sector,
+            subsector_1=subsector_1,
+            subsector_2=subsector_2
+        )
+
+        # If no data is found, return a message
+        if not filtered_data:
+            return {"message": "No data found matching the criteria."}, 404
+
+        # Convert the filtered data into a list of dictionaries
+        result = [data.toDICT() for data in filtered_data]
+
+        # Return the data as a JSON response
+        return result, 200
 
 @rest_api.route('/api/users/register')
 class Register(Resource):
