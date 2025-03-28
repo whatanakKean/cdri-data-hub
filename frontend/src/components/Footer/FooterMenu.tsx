@@ -1,8 +1,11 @@
 // https://ui.mantine.dev/category/footers/
 
 import { IconBrandInstagram, IconBrandTwitter, IconBrandYoutube } from '@tabler/icons-react';
-import { ActionIcon, Container, Group, Text, Anchor } from '@mantine/core';
+import { ActionIcon, Container, Group, Text, Anchor, useComputedColorScheme } from '@mantine/core';
 import classes from './FooterMenu.module.css';
+
+import CDRI_Logo_Light from '../../assets/images/cdri-logo-light.png';
+import CDRI_Logo_Dark from '../../assets/images/cdri-logo-dark.png';
 
 const data = [
   {
@@ -35,6 +38,8 @@ const data = [
 ];
 
 export function FooterMenu() {
+  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
+
   const groups = data.map((group) => {
     const links = group.links.map((link, index) => (
       <Text<'a'>
@@ -60,13 +65,13 @@ export function FooterMenu() {
     <footer className={classes.footer}>
       <Container className={classes.inner}>
         <div className={classes.logo}>
-        <Anchor href="/">
+        <Anchor href="/" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
             <img 
-              src="https://cdri.org.kh/storage/images/CDRI%20Logo_1704186788.png" 
+              src={computedColorScheme === 'light' ? CDRI_Logo_Light : CDRI_Logo_Dark} 
               alt="CDRI Logo"
               height="50"
             />
-          </Anchor>
+        </Anchor>
         </div>
         <div className={classes.groups}>{groups}</div>
       </Container>

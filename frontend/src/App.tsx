@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import '@mantine/core/styles.css';
+
 import { MantineProvider } from '@mantine/core';
 import Home from './pages/Home/Home';
 import { HeaderMenu } from './components/Header/HeaderMenu';
@@ -17,7 +18,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <MantineProvider>
+    <MantineProvider defaultColorScheme="dark">
       <Router>
         <HeaderMenu />
         <Routes>

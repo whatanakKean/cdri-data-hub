@@ -1,8 +1,9 @@
 .footer {
     padding-top: calc(2 * 16px);
     padding-bottom: calc(2 * 16px);
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--mantine-color-body);
+    border-top: 1px solid var(--mantine-color-border);
+    color: var(--mantine-color-text);
 }
 
 .logo {
@@ -19,6 +20,7 @@
 
 .description {
     margin-top: 5px;
+    color: var(--mantine-color-text);
 }
 
 @media (max-width: 576px) {
@@ -57,7 +59,7 @@
 
 .link {
     display: block;
-    color: #6c757d;
+    color: var(--mantine-color-dimmed);
     font-size: 14px;
     padding-top: 3px;
     padding-bottom: 3px;
@@ -66,6 +68,7 @@
 
 .link:hover {
     text-decoration: underline;
+    color: var(--mantine-color-primary);
 }
 
 .title {
@@ -73,7 +76,7 @@
     font-weight: 700;
     font-family: Arial, sans-serif;
     margin-bottom: 4px;
-    color: #000;
+    color: var(--mantine-color-text);
 }
 
 .afterFooter {
@@ -83,7 +86,7 @@
     margin-top: 16px;
     padding-top: 16px;
     padding-bottom: 16px;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid var(--mantine-color-border);
 }
 
 @media (max-width: 576px) {

@@ -1,5 +1,5 @@
 export const fetchData = async (sector: string, seriesName: string) => {
-    const apiUrl = 'https://legendary-space-robot-rvgrp55v465hw6r-5000.app.github.dev/query-data';
+    const apiUrl = 'https://legendary-space-robot-rvgrp55v465hw6r-5000.app.github.dev/api/query-data';
 
     // Request payload
     const data = {

@@ -87,7 +87,7 @@ def token_required(f):
 """
 
 # Define the resource class to handle the GET request
-@rest_api.route('/query-data')
+@rest_api.route('/api/query-data')
 class QueryData(Resource):
     @rest_api.expect(query_model)
     def post(self):
@@ -115,11 +115,9 @@ class QueryData(Resource):
 
         if not filtered_data:
             return {"message": "No data found matching the criteria."}, 404
-
-        # Convert data to dictionary format
-        result = [entry.to_dict() for entry in filtered_data]
         
-        return result, 200
+        return filtered_data, 200
+    
 
 @rest_api.route('/api/users/register')
 class Register(Resource):

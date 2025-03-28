@@ -5,6 +5,7 @@ import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from sqlalchemy import distinct
 
 db = SQLAlchemy()
 
@@ -119,8 +120,39 @@ class BaseModel(db.Model):
         for column, value in filters.items():
             if value and column != "filters":
                 query = query.filter(getattr(cls, column) == value)
-        return query.all()
 
+        # Convert data to dictionary format
+        result = [entry.to_dict() for entry in query.all()]
+
+        # Specify the columns you want to retrieve unique values from
+        exclude_column = ['id', 'indicator_value', 'series_code', 'source', 'latitude', 'longitude', 'indicator_unit', 'tag']
+        unique_values = {}
+
+        for column_name in result[0].keys():
+            
+            if column_name in exclude_column:
+                continue
+
+            if column_name == "sector" or column_name == "series_name" or column_name == "subsector_1":
+                query_unique = db.session.query(getattr(cls, column_name)).distinct().all()
+                unique_values[column_name] = [item[0] for item in query_unique if item[0] not in [None, '']]
+
+            elif column_name == "subsector_2":
+                query_unique = db.session.query(getattr(cls, column_name)).distinct().filter(
+                    getattr(cls, "subsector_1") == filters.get("subsector_1")
+                ).all()
+                unique_values[column_name] = [item[0] for item in query_unique if item[0] not in [None, '']]
+
+            else:
+                query_unique = list(set(entry[column_name] for entry in result))
+                unique_values[column_name] = [item for item in query_unique if item not in [None, '']]
+
+
+        return {
+            'data': result,
+            'filters': unique_values
+        }
+    
     def to_dict(self):
         filters_dict = json.loads(self.filters) if self.filters else {}
         return {

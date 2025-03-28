@@ -28,6 +28,13 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import classes from './HeaderMenu.module.css';
 
+import { ActionIcon, useMantineColorScheme, useComputedColorScheme } from '@mantine/core';
+import { IconSun, IconMoon } from '@tabler/icons-react';
+import cx from 'clsx';
+
+import CDRI_Logo_Light from '../../assets/images/cdri-logo-light.png';
+import CDRI_Logo_Dark from '../../assets/images/cdri-logo-dark.png';
+
 const mockdata = [
   {
     icon: IconCode,
@@ -66,6 +73,9 @@ export function HeaderMenu() {
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const theme = useMantineTheme();
 
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
+
   const links = mockdata.map((item) => (
     <UnstyledButton className={classes.subLink} key={item.title}>
       <Group wrap="nowrap" align="flex-start">
@@ -90,7 +100,7 @@ export function HeaderMenu() {
         <Group justify="space-between" h="100%">
           <Anchor href="/" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
             <img 
-              src="https://cdri.org.kh/storage/images/CDRI%20Logo_1704186788.png" 
+              src={computedColorScheme === 'light' ? CDRI_Logo_Light : CDRI_Logo_Dark} 
               alt="CDRI Logo"
               height="50"
             />
@@ -150,8 +160,16 @@ export function HeaderMenu() {
           </Group>
 
           <Group visibleFrom="sm">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
+            <Button>Log in</Button>
+            <ActionIcon
+              onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
+              variant="default"
+              size="xl"
+              aria-label="Toggle color scheme"
+            >
+              <IconSun className={cx(classes.icon, classes.light)} stroke={1.5} />
+              <IconMoon className={cx(classes.icon, classes.dark)} stroke={1.5} />
+            </ActionIcon>
           </Group>
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
@@ -192,8 +210,7 @@ export function HeaderMenu() {
           <Divider my="sm" />
 
           <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
+            <Button>Log in</Button>
           </Group>
         </ScrollArea>
       </Drawer>
