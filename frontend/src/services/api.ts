@@ -1,10 +1,11 @@
-export const fetchData = async (sector: string, seriesName: string) => {
+export const fetchData = async (sector: string, subsector_1: string, subsector_2: string) => {
     const apiUrl = 'https://legendary-space-robot-rvgrp55v465hw6r-5000.app.github.dev/api/query-data';
 
     // Request payload
     const data = {
         sector: sector,
-        series_name: seriesName
+        subsector_1: subsector_1,
+        subsector_2: subsector_2
     };
 
     try {

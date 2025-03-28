@@ -11,9 +11,6 @@ interface VisualizationProps {
 }
 
 const Visualization: React.FC<VisualizationProps> = ({ data, width = '100%', height = 500 }) => {
-    useEffect(() => {
-        console.log("Visualization Data Updated:", data);
-    }, [data]); 
     // Extract years and values
     const xAxisData = data.map(item => item.year);
     const yAxisData = data.map(item => item.indicator_value);

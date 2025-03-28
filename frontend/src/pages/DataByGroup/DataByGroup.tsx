@@ -8,77 +8,110 @@ import DataTable from '../../components/DataTable/DataTable';
 import Visualization from '../../components/Visualization/Visualization';
 
 const DataByGroup: React.FC = () => {
+    const filterLabels: Record<string, string> = {
+        sector: 'Sector',
+        subsector_1: 'Sub-sector (1)',
+        subsector_2: 'Sub-sector (2)',
+        indicator: 'Indicator',
+        province: 'Province',
+        year: 'Year',
+        markets: 'Markets',
+        products: 'Products',
+        grade: 'Grade',
+        variety: 'Variety'
+    };
     const [activeTab, setActiveTab] = useState("map");
     const [data, setData] = useState<any[]>([]);
+    const [filteredData, setFilteredData] = useState<any[]>([]);
     const [filters, setFilters] = useState<any>({});
-    const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
-
-    // Fetch data for a specific tab with selected filters
-    const fetchTabData = async () => {
+    const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({
+        sector: "Agriculture",
+        subsector_1: "Production",
+        subsector_2: "Rice",
+    });
+    const fetchTabData = async (currentFilters: Record<string, string>) => {
         try {
-            const result = await fetchData("Agriculture", "Rice Production");
+            const result = await fetchData(
+                currentFilters.sector,
+                currentFilters.subsector_1,
+                currentFilters.subsector_2
+            );
             setData(result.data);
+            setFilteredData(result.data);
             setFilters(result.filters);
-            
-            // Initialize selected filters with first value of each filter if not already set
-            const initialFilters: Record<string, string> = {};
-            Object.keys(result.filters).forEach(key => {
-                initialFilters[key] = String(result.filters[key][0]);
+
+            setSelectedFilters(prev => {
+                const updatedFilters: Record<string, string> = {};
+                Object.keys({ ...prev, ...result.filters }).forEach(key => {
+                    if (result.filters[key] && result.filters[key].length > 0) {
+                        const availableOptions = result.filters[key].map(String);
+                        updatedFilters[key] = prev[key] && availableOptions.includes(prev[key])
+                            ? prev[key]
+                            : String(result.filters[key][0]);
+                    }
+                });
+                return updatedFilters;
             });
-            setSelectedFilters(prev => ({
-                ...initialFilters,
-                ...prev // Preserve any existing selections
-            }));
+            console.log(selectedFilters)
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
-    // Effect to fetch data when the component mounts
-    useEffect(() => {
-        fetchTabData();
-    }, []);
-
-    // Handle segment change
     const handleTabChange = (value: string) => {
         setActiveTab(value);
-        fetchTabData();
     };
 
-    // Handle filter selection change
     const handleFilterChange = (filterKey: string, value: string) => {
-        setSelectedFilters(prev => ({
-            ...prev,
-            [filterKey]: value
-        }));
-        // Optionally fetch new data based on updated filters
-        // fetchTabData(); 
+        setSelectedFilters(prev => {
+            const newFilters = { ...prev, [filterKey]: value };
+            if (['sector', 'subsector_1', 'subsector_2'].includes(filterKey)) {
+                fetchTabData(newFilters);
+            }
+            else {
+                setFilteredData(data.filter((item: any) => item[filterKey] === value));
+            }
+            return newFilters;
+        });
     };
+
+    const priorityFilters = ['sector', 'subsector_1', 'subsector_2', 'indicator'];
+    const allFilterKeys = Object.keys(filters).filter(key => key !== 'series_name'); // Explicitly exclude series_name
+    const orderedFilterKeys = [
+        ...priorityFilters.filter(key => allFilterKeys.includes(key)),
+        ...allFilterKeys.filter(key => !priorityFilters.includes(key))
+    ];
+
+    useEffect(() => {
+        fetchTabData(selectedFilters);
+    }, []);
 
     return (
         <Grid p={10}>
             <Grid.Col span={{ base: 12, sm: 3 }}>
                 <Paper p="md" radius="md" shadow="xs" withBorder>
-                    {Object.keys(filters).map((key) => (
-                        <Select
-                            key={key}
-                            label={key}
-                            data={filters[key].map((item: any) => ({
-                                label: item,
-                                value: String(item),
-                            }))}
-                            value={selectedFilters[key] || filters[key]?.[0] || ''}
-                            onChange={(value) => handleFilterChange(key, value as string)}
-                            styles={{
-                                dropdown: {
-                                    maxHeight: '200px',
-                                    overflowY: 'auto',
-                                },
-                                root: {
-                                    marginBottom: '16px',
-                                },
-                            }}
-                        />
+                    {orderedFilterKeys.map((key) => (
+                        filters[key] && filters[key].length > 0 && (  
+                            <Select
+                                key={key}
+                                label={filterLabels[key] || key}
+                                data={filters[key].map((item: any) => ({
+                                    label: item,
+                                    value: String(item),
+                                }))}
+                                value={selectedFilters[key] || filters[key]?.[0] || ''}
+                                onChange={(value) => handleFilterChange(key, value as string)}
+                                styles={{
+                                    dropdown: {
+                                        maxHeight: '200px',
+                                        overflowY: 'auto',
+                                    },
+                                    root: {
+                                        marginBottom: '16px',
+                                    },
+                                }}
+                            />
+                        )
                     ))}
 
                     <Accordion variant="contained" radius="md">
@@ -111,9 +144,9 @@ const DataByGroup: React.FC = () => {
                         ]}
                     />
 
-                    {activeTab === 'map' && <Map data={data} width="100%" height="500px" />}
-                    {activeTab === 'visualization' && <Visualization data={data} width="100%" height="500px" />}
-                    {activeTab === 'data' && <DataTable data={data} width="100%" height="500px" />}
+                    {activeTab === 'map' && <Map data={filteredData} width="100%" height="500px" />}
+                    {activeTab === 'visualization' && <Visualization data={filteredData} width="100%" height="500px" />}
+                    {activeTab === 'data' && <DataTable data={filteredData} width="100%" height="500px" />}
                 </Paper>
             </Grid.Col>
         </Grid>
