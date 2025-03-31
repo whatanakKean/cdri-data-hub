@@ -125,11 +125,10 @@ class BaseModel(db.Model):
         result = [entry.to_dict() for entry in query.all()]
 
         # Specify the columns you want to retrieve unique values from
-        exclude_column = ['id', 'indicator_value', 'series_code', 'source', 'latitude', 'longitude', 'indicator_unit', 'tag']
+        exclude_column = ['id', 'indicator_value', 'series_code', 'series_name', 'source', 'latitude', 'longitude', 'indicator_unit', 'tag']
         unique_values = {}
 
         for column_name in result[0].keys():
-            
             if column_name in exclude_column:
                 continue
 
@@ -153,19 +152,46 @@ class BaseModel(db.Model):
             'filters': unique_values
         }
     
+    @classmethod
+    def get_menu(cls, **filters):
+        unique_values = {}
+
+        # Only include these columns for unique values
+        columns_of_interest = ['sector', 'subsector_1', 'subsector_2', 'series_name']
+
+        for column_name in columns_of_interest:
+            if column_name == "subsector_2" and "subsector_1" in filters:
+                # Only query subsector_2 if subsector_1 filter is provided
+                query_unique = db.session.query(getattr(cls, column_name)).distinct().filter(
+                    getattr(cls, "subsector_1") == filters.get("subsector_1"),
+                    getattr(cls, column_name) != None  # Exclude None values
+                ).all()
+                unique_values[column_name] = [item[0] for item in query_unique if item[0] not in ['', None]]
+
+            else:
+                # Directly query the unique values for the column
+                query_unique = db.session.query(getattr(cls, column_name)).distinct().filter(
+                    getattr(cls, column_name) != None  # Exclude None values
+                ).all()
+                unique_values[column_name] = [item[0] for item in query_unique if item[0] not in ['', None]]
+
+        return unique_values
+
+    
+    
     def to_dict(self):
         filters_dict = json.loads(self.filters) if self.filters else {}
         return {
             'id': self.id,
-            'province': self.province,
-            'series_name': self.series_name,
-            'indicator_value': self.indicator_value,
-            'indicator': self.indicator,
-            'year': self.year,
-            'series_code': self.series_code,
             'sector': self.sector,
             'subsector_1': self.subsector_1,
             'subsector_2': self.subsector_2,
+            'series_name': self.series_name,
+            'indicator_value': self.indicator_value,
+            'indicator': self.indicator,
+            'province': self.province,
+            'year': self.year,
+            'series_code': self.series_code,
             'source': self.source,
             'latitude': self.latitude,
             'longitude': self.longitude,

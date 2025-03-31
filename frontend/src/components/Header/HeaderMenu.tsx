@@ -151,7 +151,7 @@ export function HeaderMenu() {
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
-            <a href="#" className={classes.link}>
+            <a href="/data-explorer" className={classes.link}>
               Data Explorer
             </a>
             <a href="#" className={classes.link}>
@@ -200,7 +200,7 @@ export function HeaderMenu() {
             </Center>
           </UnstyledButton>
           <Collapse in={linksOpened}>{links}</Collapse>
-          <a href="#" className={classes.link}>
+          <a href="/data-explorer" className={classes.link}>
             Data Explorer
           </a>
           <a href="#" className={classes.link}>

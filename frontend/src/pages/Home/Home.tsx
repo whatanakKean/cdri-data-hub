@@ -7,7 +7,7 @@ import { MissionSection } from '../../components/MissionSection/MissionSection';
 const Home: React.FC = () => {
   return (
     <Stack>
-      <HeroSection />
+      <HeroSection title="CDRI Data Hub" subtitle="Empowering Evidence-Based Decision-Making" />
       <MissionSection />
     </Stack>
   );

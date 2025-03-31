@@ -1,5 +1,5 @@
 export const fetchData = async (sector: string, subsector_1: string, subsector_2: string) => {
-    const apiUrl = 'https://legendary-space-robot-rvgrp55v465hw6r-5000.app.github.dev/api/query-data';
+    const apiUrl = 'https://5000-idx-cdri-data-hub-1743150338726.cluster-nx3nmmkbnfe54q3dd4pfbgilpc.cloudworkstations.dev/api/query-data';
 
     // Request payload
     const data = {
@@ -24,7 +24,6 @@ export const fetchData = async (sector: string, subsector_1: string, subsector_2
         }
 
         const result = await response.json();
-        console.log('Fetched data:', result);
         return result;
         
     } catch (error) {

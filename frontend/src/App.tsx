@@ -7,9 +7,11 @@ import Home from './pages/Home/Home';
 import { HeaderMenu } from './components/Header/HeaderMenu';
 import { FooterMenu } from './components/Footer/FooterMenu';
 import { NotFound } from './components/NotFound/NotFound';
-import DataByGroup from './pages/DataByGroup/DataByGroup';
+import DataBySeries from './pages/DataBySeries/DataBySeries';
+import DataExplorer from './pages/DataExplorer/DataExplorer';
 import { IconArrowUp } from '@tabler/icons-react';
 import { ActionIcon, Affix } from '@mantine/core';
+
 
 const App: React.FC = () => {
   // Function to scroll to top
@@ -23,8 +25,8 @@ const App: React.FC = () => {
         <HeaderMenu />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/data" element={<DataByGroup />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/data-explorer" element={<DataExplorer />} />
+          <Route path="/*" element={<DataBySeries />} />
         </Routes>
         <FooterMenu />
         

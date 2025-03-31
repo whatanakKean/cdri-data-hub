@@ -1,10 +1,13 @@
-// https://ui.mantine.dev/component/hero-image-right/
-
 import { Button, Container, Text, Title } from '@mantine/core';
 import classes from './HeroSection.module.css';
 import { motion } from 'framer-motion';
 
-export function HeroSection() {
+interface HeroSectionProps {
+  title: string;
+  subtitle: string;
+}
+
+export function HeroSection({ title, subtitle }: HeroSectionProps) {
   return (
     <div className={classes.root}>
       <Container size="lg">
@@ -17,11 +20,11 @@ export function HeroSection() {
               viewport={{ once: true }}
             >
               <Title className={classes.title}>
-                CDRI Data Hub
+                {title}
               </Title>
 
               <Text className={classes.description} mt={30}>
-              Empowering Evidence-Based Decision-Making
+                {subtitle}
               </Text>
             </motion.section>
           </div>

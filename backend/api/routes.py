@@ -118,6 +118,29 @@ class QueryData(Resource):
         
         return filtered_data, 200
     
+@rest_api.route('/api/query-menu')
+class QueryMenu(Resource):
+    @rest_api.expect(query_model)
+    def post(self):
+        data = rest_api.payload
+
+        # Prepare filters (excluding 'sector' itself)
+        filters = {key: value for key, value in data.items() if key != 'sector'}
+
+        # List of all sector models
+        ModelClasses = [EducationData, AgricultureData, EconomicData]
+        
+        # Initialize an empty dictionary to store the aggregated data
+        aggregated_data = {}
+
+        # Query data from all sectors
+        for model_class in ModelClasses:
+            filtered_data = model_class.get_menu(**filters)
+            # Store the filtered data with the model class name as the key
+            aggregated_data[model_class.__name__] = filtered_data
+
+        return aggregated_data, 200
+    
 
 @rest_api.route('/api/users/register')
 class Register(Resource):

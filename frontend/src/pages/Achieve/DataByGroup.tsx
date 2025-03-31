@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Grid, Select, Accordion, AccordionItem, AccordionControl, AccordionPanel, Group, Text, Paper, SegmentedControl } from '@mantine/core';
 import { IconMap, IconChartBar, IconTable } from '@tabler/icons-react';
 import { fetchData } from '../../services/api';
@@ -20,15 +20,20 @@ const DataByGroup: React.FC = () => {
         grade: 'Grade',
         variety: 'Variety'
     };
+
     const [activeTab, setActiveTab] = useState("map");
-    const [data, setData] = useState<any[]>([]);
+    const [data, setData] = useState<any[]>([]); 
     const [filteredData, setFilteredData] = useState<any[]>([]);
     const [filters, setFilters] = useState<any>({});
     const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({
         sector: "Agriculture",
         subsector_1: "Production",
         subsector_2: "Rice",
+        indicator: "Area Planted",
+        province: "Tboung Khmum"
     });
+    const prevSelectedFiltersRef = useRef(selectedFilters);
+
     const fetchTabData = async (currentFilters: Record<string, string>) => {
         try {
             const result = await fetchData(
@@ -36,9 +41,9 @@ const DataByGroup: React.FC = () => {
                 currentFilters.subsector_1,
                 currentFilters.subsector_2
             );
-            setData(result.data);
-            setFilteredData(result.data);
-            setFilters(result.filters);
+
+            setData(result.data || []);
+            setFilters(result.filters || {});
 
             setSelectedFilters(prev => {
                 const updatedFilters: Record<string, string> = {};
@@ -52,35 +57,49 @@ const DataByGroup: React.FC = () => {
                 });
                 return updatedFilters;
             });
-            console.log(selectedFilters)
+
+            const updatedFilteredData = applyFilters(data, selectedFilters);
+            setFilteredData(updatedFilteredData);
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
-    const handleTabChange = (value: string) => {
-        setActiveTab(value);
+    const applyFilters = (rawData: any[], currentFilters: Record<string, string>) => {
+        return rawData.filter(item =>
+            Object.entries(currentFilters).every(([key, value]) => {
+                if (key === 'year') return true;
+                if (!item[key]) return true;
+                return String(item[key]) === value;
+            })
+        );
     };
 
-    const handleFilterChange = (filterKey: string, value: string) => {
-        setSelectedFilters(prev => {
-            const newFilters = { ...prev, [filterKey]: value };
-            if (['sector', 'subsector_1', 'subsector_2'].includes(filterKey)) {
-                fetchTabData(newFilters);
-            }
-            else {
-                setFilteredData(data.filter((item: any) => item[filterKey] === value));
-            }
-            return newFilters;
-        });
-    };
+    useEffect(() => {
+        const updatedFilteredData = applyFilters(data, selectedFilters);
+        setFilteredData(updatedFilteredData);
+    }, [selectedFilters]);
 
-    const priorityFilters = ['sector', 'subsector_1', 'subsector_2', 'indicator'];
-    const allFilterKeys = Object.keys(filters).filter(key => key !== 'series_name'); // Explicitly exclude series_name
-    const orderedFilterKeys = [
-        ...priorityFilters.filter(key => allFilterKeys.includes(key)),
-        ...allFilterKeys.filter(key => !priorityFilters.includes(key))
-    ];
+    useEffect(() => {
+        // Check if any of sector, subsector_1, or subsector_2 have changed
+        const hasCriticalFilterChanged =
+            selectedFilters.sector !== prevSelectedFiltersRef.current.sector ||
+            selectedFilters.subsector_1 !== prevSelectedFiltersRef.current.subsector_1 ||
+            selectedFilters.subsector_2 !== prevSelectedFiltersRef.current.subsector_2;
+
+        // If critical filters change, fetch new data
+        if (hasCriticalFilterChanged) {
+            fetchTabData(selectedFilters);
+        } else {
+            const updatedFilteredData = applyFilters(data, selectedFilters);
+            setFilteredData(updatedFilteredData);
+        }
+
+        // Update the previous filters after processing
+        prevSelectedFiltersRef.current = selectedFilters;
+
+    }, [selectedFilters]);
 
     useEffect(() => {
         fetchTabData(selectedFilters);
@@ -90,7 +109,7 @@ const DataByGroup: React.FC = () => {
         <Grid p={10}>
             <Grid.Col span={{ base: 12, sm: 3 }}>
                 <Paper p="md" radius="md" shadow="xs" withBorder>
-                    {orderedFilterKeys.map((key) => (
+                    {Object.keys(filters).map((key) => (
                         filters[key] && filters[key].length > 0 && (  
                             <Select
                                 key={key}
@@ -100,7 +119,7 @@ const DataByGroup: React.FC = () => {
                                     value: String(item),
                                 }))}
                                 value={selectedFilters[key] || filters[key]?.[0] || ''}
-                                onChange={(value) => handleFilterChange(key, value as string)}
+                                onChange={(value) => setSelectedFilters(prev => ({ ...prev, [key]: value as string }))} 
                                 styles={{
                                     dropdown: {
                                         maxHeight: '200px',
@@ -136,7 +155,7 @@ const DataByGroup: React.FC = () => {
                     <SegmentedControl
                         fullWidth
                         value={activeTab}
-                        onChange={handleTabChange}
+                        onChange={setActiveTab}
                         data={[
                             { label: <><IconMap size={12} /> Map</>, value: 'map' },
                             { label: <><IconChartBar size={12} /> Visualization</>, value: 'visualization' },

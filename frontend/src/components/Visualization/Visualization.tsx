@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
 import { EChartsOption } from 'echarts';
-import { useEffect } from 'react';
 
 
 interface VisualizationProps {
