@@ -1,0 +1,92 @@
+.root {
+  height: 300px;
+  /* background-color: #11284b; */
+  background-size: cover;
+  background-position: center;
+  background-image:
+    url('../../assets/images/data-explorer-background.jpg');
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 20px;
+}
+
+  
+  .inner {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  @media (max-width: 768px) {
+    .inner {
+      flex-direction: column;
+    }
+  }
+  
+  .image {
+    display: block;
+  }
+  
+  @media (max-width: 768px) {
+    .image {
+      display: none;
+    }
+  }
+  
+  .content {
+    padding-top: calc(32px * 2);
+    padding-bottom: calc(32px * 2);
+    margin-right: calc(32px * 3);
+  }
+  
+  @media (max-width: 768px) {
+    .content {
+      margin-right: 0;
+    }
+  }
+  
+  .title {
+    color: white;
+    font-family: "Greycliff CF", sans-serif;
+    /* font-weight: 900; */
+    line-height: 1.05;
+    max-width: 500px;
+    font-size: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .title {
+      max-width: 100%;
+      font-size: 1.75rem;
+      line-height: 1.15;
+    }
+  }
+  
+  .description {
+    color: white;
+    opacity: 0.75;
+    font-size: 1rem;
+    max-width: 500px;
+  }
+  
+  @media (max-width: 768px) {
+    .description {
+      max-width: 100%;
+      font-size: 0.75rem;
+    }
+  }
+  
+  .control {
+    padding-left: 50px;
+    padding-right: 50px;
+    font-family: "Greycliff CF", sans-serif;
+    font-size: 22px;
+  }
+  
+  @media (max-width: 768px) {
+    .control {
+      width: 100%;
+    }
+  }
+  

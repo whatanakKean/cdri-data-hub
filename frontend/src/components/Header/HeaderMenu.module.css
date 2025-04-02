@@ -67,3 +67,10 @@
 [data-mantine-color-scheme="dark"] .dark {
   display: block;
 }
+
+.logo {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 156.25px
+}

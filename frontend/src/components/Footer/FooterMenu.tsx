@@ -65,7 +65,7 @@ export function FooterMenu() {
     <footer className={classes.footer}>
       <Container className={classes.inner}>
         <div className={classes.logo}>
-        <Anchor href="/" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+        <Anchor href="/" className={classes.logo}>
             <img 
               src={computedColorScheme === 'light' ? CDRI_Logo_Light : CDRI_Logo_Dark} 
               alt="CDRI Logo"

@@ -16,7 +16,7 @@ const Visualization: React.FC<VisualizationProps> = ({ data, width = '100%', hei
 
     const option: EChartsOption = {
         title: {
-            text: data[0]?.series_name || 'Chart Title',
+            text: data[0]?.tag || 'Chart Title',
         },
         tooltip: {
             trigger: 'axis',

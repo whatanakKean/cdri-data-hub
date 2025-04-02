@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy import distinct
+from collections import defaultdict
 
 db = SQLAlchemy()
 
@@ -125,7 +126,7 @@ class BaseModel(db.Model):
         result = [entry.to_dict() for entry in query.all()]
 
         # Specify the columns you want to retrieve unique values from
-        exclude_column = ['id', 'indicator_value', 'series_code', 'series_name', 'source', 'latitude', 'longitude', 'indicator_unit', 'tag']
+        exclude_column = ['sector', 'subsector_1', 'subsector_2', 'id', 'indicator_value', 'series_code', 'series_name', 'source', 'latitude', 'longitude', 'indicator_unit', 'tag']
         unique_values = {}
 
         for column_name in result[0].keys():
@@ -146,38 +147,47 @@ class BaseModel(db.Model):
                 query_unique = list(set(entry[column_name] for entry in result))
                 unique_values[column_name] = [item for item in query_unique if item not in [None, '']]
 
-
+        unique_values = {key: value for key, value in unique_values.items() if value}
         return {
             'data': result,
             'filters': unique_values
         }
     
+
     @classmethod
-    def get_menu(cls, **filters):
-        unique_values = {}
+    def get_menu(cls):
+        # Step 1: Query distinct sectors
+        sectors = db.session.query(cls.sector).distinct().all()
+        sectors = [s[0] for s in sectors if s[0] not in [None, ""]]
 
-        # Only include these columns for unique values
-        columns_of_interest = ['sector', 'subsector_1', 'subsector_2', 'series_name']
+        # Step 2: Query distinct subsector_1 values mapped to sectors
+        subsector_1_data = db.session.query(cls.sector, cls.subsector_1).distinct().all()
 
-        for column_name in columns_of_interest:
-            if column_name == "subsector_2" and "subsector_1" in filters:
-                # Only query subsector_2 if subsector_1 filter is provided
-                query_unique = db.session.query(getattr(cls, column_name)).distinct().filter(
-                    getattr(cls, "subsector_1") == filters.get("subsector_1"),
-                    getattr(cls, column_name) != None  # Exclude None values
-                ).all()
-                unique_values[column_name] = [item[0] for item in query_unique if item[0] not in ['', None]]
+        # Step 3: Query distinct series names mapped to subsector_1
+        series_data = db.session.query(cls.subsector_1, cls.series_name).distinct().all()
 
-            else:
-                # Directly query the unique values for the column
-                query_unique = db.session.query(getattr(cls, column_name)).distinct().filter(
-                    getattr(cls, column_name) != None  # Exclude None values
-                ).all()
-                unique_values[column_name] = [item[0] for item in query_unique if item[0] not in ['', None]]
+        # Step 4: Build the hierarchical structure
+        menu = defaultdict(lambda: defaultdict(list))
+        series_name_list = []
 
-        return unique_values
+        # Mapping subsector_1 to sectors
+        for sector, sub1 in subsector_1_data:
+            if sector and sub1:
+                menu[sector][sub1] = []
 
-    
+        # Mapping series to subsector_1
+        for sub1, series in series_data:
+            if sub1 and series:
+                # series_name_list.add(series)
+                for sector in menu:
+                    if sub1 in menu[sector]:
+                        menu[sector][sub1].append(series)
+                        new_item = {"series_name": series, "sector": sector}
+                        if new_item not in series_name_list:
+                            series_name_list.append(new_item)
+
+        return menu, series_name_list
+
     
     def to_dict(self):
         filters_dict = json.loads(self.filters) if self.filters else {}

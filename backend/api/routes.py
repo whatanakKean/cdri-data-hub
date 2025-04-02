@@ -10,6 +10,7 @@ import jwt
 from .models import db, Users, JWTTokenBlocklist, EducationData, AgricultureData, EconomicData
 from .config import BaseConfig
 import requests
+from collections import defaultdict
 
 rest_api = Api(version="1.0", title="CDRI Data Hub API")
 
@@ -117,30 +118,34 @@ class QueryData(Resource):
             return {"message": "No data found matching the criteria."}, 404
         
         return filtered_data, 200
-    
+
 @rest_api.route('/api/query-menu')
 class QueryMenu(Resource):
-    @rest_api.expect(query_model)
-    def post(self):
-        data = rest_api.payload
-
-        # Prepare filters (excluding 'sector' itself)
-        filters = {key: value for key, value in data.items() if key != 'sector'}
-
-        # List of all sector models
+    def get(self):
+        print("Hello")
         ModelClasses = [EducationData, AgricultureData, EconomicData]
         
         # Initialize an empty dictionary to store the aggregated data
-        aggregated_data = {}
+        aggregated_menu = defaultdict(lambda: defaultdict(list))
+        aggregated_series_name = []
 
-        # Query data from all sectors
+        # Query hierarchical data from all sector models
         for model_class in ModelClasses:
-            filtered_data = model_class.get_menu(**filters)
-            # Store the filtered data with the model class name as the key
-            aggregated_data[model_class.__name__] = filtered_data
+            filtered_data, series_name_list = model_class.get_menu()
 
-        return aggregated_data, 200
-    
+            # Merge the dictionaries
+            for key, sub_dict in filtered_data.items():
+                for sub_key, sub_value in sub_dict.items():
+                    aggregated_menu[key][sub_key].extend(sub_value)
+
+            # Extend the list instead of appending
+            aggregated_series_name.extend(series_name_list)
+
+        # Convert back to a regular dictionary if needed
+        aggregated_menu = {k: dict(v) for k, v in aggregated_menu.items()}
+
+        return {"menu": aggregated_menu, "data_explorer": aggregated_series_name}, 200
+
 
 @rest_api.route('/api/users/register')
 class Register(Resource):

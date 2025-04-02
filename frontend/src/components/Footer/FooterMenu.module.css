@@ -100,3 +100,11 @@
         margin-top: 8px;
     }
 }
+
+
+.logo {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 156.25px
+  }

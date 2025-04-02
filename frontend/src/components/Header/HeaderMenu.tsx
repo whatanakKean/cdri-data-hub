@@ -34,6 +34,7 @@ import cx from 'clsx';
 
 import CDRI_Logo_Light from '../../assets/images/cdri-logo-light.png';
 import CDRI_Logo_Dark from '../../assets/images/cdri-logo-dark.png';
+import { MantineLogo } from '@mantinex/mantine-logo';
 
 const mockdata = [
   {
@@ -98,7 +99,7 @@ export function HeaderMenu() {
     <Box>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
-          <Anchor href="/" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          <Anchor href="/" className={classes.logo}>
             <img 
               src={computedColorScheme === 'light' ? CDRI_Logo_Light : CDRI_Logo_Dark} 
               alt="CDRI Logo"
@@ -161,7 +162,7 @@ export function HeaderMenu() {
 
           <Group visibleFrom="sm">
             <Button>Log in</Button>
-            <ActionIcon
+            {/* <ActionIcon
               onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
               variant="default"
               size="xl"
@@ -169,7 +170,7 @@ export function HeaderMenu() {
             >
               <IconSun className={cx(classes.icon, classes.light)} stroke={1.5} />
               <IconMoon className={cx(classes.icon, classes.dark)} stroke={1.5} />
-            </ActionIcon>
+            </ActionIcon> */}
           </Group>
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />

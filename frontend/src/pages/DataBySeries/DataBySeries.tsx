@@ -7,6 +7,7 @@ import { HeroSection } from '../../components/HeroSection/HeroSection';
 import Map from '../../components/Map/Map';
 import DataTable from '../../components/DataTable/DataTable';
 import Visualization from '../../components/Visualization/Visualization';
+import InsightConent from '../../components/InsightContent/InsightContent';
 
 const DataBySeries: React.FC = () => {
     const [activeTab, setActiveTab] = useState("map");
@@ -25,8 +26,7 @@ const DataBySeries: React.FC = () => {
         try {
             const result = await fetchData(
                 selectedFilters.sector,
-                selectedFilters.subsector_1,
-                selectedFilters.subsector_2
+                selectedFilters.series_name
             );
 
             setData(result.data || []);
@@ -41,22 +41,7 @@ const DataBySeries: React.FC = () => {
   return (
     <Stack>
       <HeroSection title={selectedFilters.series_name} subtitle="" />
-      <Paper p="md" radius="md" shadow="xs" withBorder>
-            <SegmentedControl
-                fullWidth
-                value={activeTab}
-                onChange={setActiveTab}
-                data={[
-                    { label: <><IconMap size={12} /> Map</>, value: 'map' },
-                    { label: <><IconChartBar size={12} /> Visualization</>, value: 'visualization' },
-                    { label: <><IconTable size={12} /> Data View</>, value: 'data' },
-                ]}
-            />
-
-            {activeTab === 'map' && <Map data={data} width="100%" height="500px" />}
-            {activeTab === 'visualization' && <Visualization data={data} width="100%" height="500px" />}
-            {activeTab === 'data' && <DataTable data={data} width="100%" height="500px" />}
-        </Paper>
+      {/* <InsightConent/> */}
     </Stack>
   );
 };
