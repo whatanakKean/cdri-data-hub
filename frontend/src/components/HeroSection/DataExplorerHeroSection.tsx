@@ -16,7 +16,7 @@ export function DataExplorerHeroSection({ title, subtitle, menuData, onSelectSer
         <Text size="xl" className={classes.description}>Explore Data and Visualizations with Natural Language</Text>
         <Autocomplete
           label="Select Data Series"
-          placeholder="Start typing..."
+          placeholder="Ask Anything..."
           data={menuData}
           onChange={onSelectSeries} // Update selected value
         />

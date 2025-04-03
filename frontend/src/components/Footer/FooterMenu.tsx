@@ -67,27 +67,27 @@ export function FooterMenu() {
         <div className={classes.logo}>
         <Anchor href="/" className={classes.logo}>
             <img 
-              src={computedColorScheme === 'light' ? CDRI_Logo_Light : CDRI_Logo_Dark} 
+              src={CDRI_Logo_Dark} 
               alt="CDRI Logo"
-              height="50"
+              width="160"
             />
         </Anchor>
         </div>
         <div className={classes.groups}>{groups}</div>
       </Container>
       <Container className={classes.afterFooter}>
-        <Text c="dimmed" size="sm">
+        <Text size="sm">
           Copyright © 2025 CDRI. All rights reserved.
         </Text>
 
         <Group gap={0} className={classes.social} justify="flex-end" wrap="nowrap">
-          <ActionIcon size="lg" color="gray" variant="subtle">
+          <ActionIcon size="lg" color="white" variant="subtle">
             <IconBrandTwitter size={18} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle">
+          <ActionIcon size="lg" color="white" variant="subtle">
             <IconBrandYoutube size={18} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle">
+          <ActionIcon size="lg" color="white" variant="subtle">
             <IconBrandInstagram size={18} stroke={1.5} />
           </ActionIcon>
         </Group>

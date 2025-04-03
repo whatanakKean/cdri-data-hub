@@ -1,0 +1,43 @@
+.title {
+    color: black;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #ECF0F1, #FFFFFF);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 0 auto 20px auto;
+    line-height: 1.05;
+    max-width: 500px;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .title {
+        max-width: 100%;
+        line-height: 1.15;
+    }
+}
+
+
+/* Radio Group CSS */
+.checkbox {
+    position: relative;
+    padding: var(--mantine-spacing-xs);
+    transition: border-color 150ms ease;
+  
+    &[data-checked] {
+      border-color: var(--mantine-primary-color-filled);
+    }
+  
+    @mixin hover {
+      @mixin light {
+        background-color: var(--mantine-color-gray-0);
+      }
+  
+      @mixin dark {
+        background-color: var(--mantine-color-dark-6);
+      }
+    }
+  }

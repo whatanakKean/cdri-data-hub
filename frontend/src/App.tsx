@@ -20,22 +20,22 @@ const App: React.FC = () => {
   };
 
   return (
-    <MantineProvider defaultColorScheme="dark">
-      <Router>
-        <HeaderMenu />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/data-explorer" element={<DataExplorer />} />
-          <Route path="/*" element={<DataBySeries />} />
-        </Routes>
-        <FooterMenu />
-        
-        <Affix position={{ bottom: 20, right: 20 }}>
-          <ActionIcon color="blue" radius="xl" size={50} onClick={scrollToTop}>
-            <IconArrowUp stroke={1.5} size={30} />
-          </ActionIcon>
-        </Affix>
-      </Router>
+    <MantineProvider>
+        <Router>
+          <HeaderMenu />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/data-explorer" element={<DataExplorer />} />
+            <Route path="/*" element={<DataBySeries />} />
+          </Routes>
+          <FooterMenu />
+          
+          <Affix position={{ bottom: 20, right: 20 }}>
+            <ActionIcon color="blue" radius="xl" size={50} onClick={scrollToTop}>
+              <IconArrowUp stroke={1.5} size={30} />
+            </ActionIcon>
+          </Affix>
+        </Router>
     </MantineProvider>
   );
 };

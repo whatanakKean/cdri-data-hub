@@ -101,9 +101,9 @@ export function HeaderMenu() {
         <Group justify="space-between" h="100%">
           <Anchor href="/" className={classes.logo}>
             <img 
-              src={computedColorScheme === 'light' ? CDRI_Logo_Light : CDRI_Logo_Dark} 
+              src={CDRI_Logo_Dark} 
               alt="CDRI Logo"
-              height="50"
+              width="160"
             />
           </Anchor>
 
@@ -118,7 +118,7 @@ export function HeaderMenu() {
                     <Box component="span" mr={5}>
                       Sectors
                     </Box>
-                    <IconChevronDown size={16} color={theme.colors.blue[6]} />
+                    <IconChevronDown size={16} color={theme.white} />
                   </Center>
                 </a>
               </HoverCard.Target>
@@ -173,7 +173,7 @@ export function HeaderMenu() {
             </ActionIcon> */}
           </Group>
 
-          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
+          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" color='white' />
         </Group>
       </header>
 

@@ -1,9 +1,9 @@
 .footer {
     padding-top: calc(2 * 16px);
     padding-bottom: calc(2 * 16px);
-    background-color: var(--mantine-color-body);
+    background-color: #336666;
     border-top: 1px solid var(--mantine-color-border);
-    color: var(--mantine-color-text);
+    color: white;
 }
 
 .logo {
@@ -20,7 +20,7 @@
 
 .description {
     margin-top: 5px;
-    color: var(--mantine-color-text);
+    color: white;
 }
 
 @media (max-width: 576px) {
@@ -59,7 +59,7 @@
 
 .link {
     display: block;
-    color: var(--mantine-color-dimmed);
+    color: white;
     font-size: 14px;
     padding-top: 3px;
     padding-bottom: 3px;
@@ -76,7 +76,7 @@
     font-weight: 700;
     font-family: Arial, sans-serif;
     margin-bottom: 4px;
-    color: var(--mantine-color-text);
+    color: white;
 }
 
 .afterFooter {
@@ -101,10 +101,9 @@
     }
 }
 
-
 .logo {
     display: flex;
     align-items: center;
     height: 100%;
-    width: 156.25px
-  }
+    width: 156.25px;
+}

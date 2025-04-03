@@ -58,7 +58,12 @@ const Visualization: React.FC<VisualizationProps> = ({ data, width = '100%', hei
             },
         ],
     };
-    return <ReactECharts option={option} style={{ width, height, paddingTop: 20 }} />;
+    return(
+        <div>
+            <ReactECharts option={option} opts={{ renderer: 'svg' }} style={{ width, height, paddingTop: 20 }} />
+        </div>
+    );
+    
 };
 
 export default Visualization;

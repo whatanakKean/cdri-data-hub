@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Box, Stack, Paper, SegmentedControl, Title, Grid, TextInput, Button, Checkbox, Alert } from '@mantine/core';
+import { Container, Group, Text, Checkbox, CheckboxGroup, Select, Box, Stack, Paper, SegmentedControl, Title, Grid, Alert } from '@mantine/core';
 import { IconMap, IconChartBar, IconTable } from '@tabler/icons-react';
 
 import Map from '../Map/Map';
 import DataTable from '../DataTable/DataTable';
 import Visualization from '../Visualization/Visualization';
 import { fetchData } from '../../services/api';
+
+import classes from './InsightContent.module.css';
 
 interface InsightContentProps {
     selectedSeries: string;
@@ -42,7 +44,6 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
                             : String(result.filters[key][0]);
                     }
                 });
-                console.log("Selected Filters: ", updatedFilters);
                 return updatedFilters;
             });
             setFilteredData(applyFilters(data, selectedFilters));
@@ -59,7 +60,6 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
         if (data.length > 0) {
             const filtered = applyFilters(data, selectedFilters);
             setFilteredData(filtered);
-            console.log(">> Filtered Data: ", filteredData)
         }
     }, [selectedFilters, data]);
 
@@ -67,6 +67,7 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
         return rawData.filter(item =>
             Object.entries(currentFilters).every(([key, value]) => {
                 if (key === 'year') return true;
+                if (key === 'province') return true;
                 if (!item[key]) return true;
                 return String(item[key]) === value;
             })
@@ -77,36 +78,67 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
         <Stack p="lg">
             {data.length > 0 ? (
                 <Box>
-                    <Title order={1}>{selectedSeries}</Title>
+                    <Title order={3} className={classes.title}>{selectedSeries}</Title>
                     <Grid>
                         {/* Filter Panel */}
                         <Grid.Col span={{ base: 12, sm: 3 }}>
                             <Paper p="md" shadow="sm" withBorder>
-                                {Object.keys(filters).map((key) => (
-                                    filters[key] && filters[key].length > 0 && (  
-                                        <Select
-                                            key={key}
-                                            label={key}
-                                            data={filters[key].map((item: any) => ({
-                                                label: item,
-                                                value: String(item),
-                                            }))}
-                                            value={selectedFilters[key] || filters[key]?.[0] || ''}
-                                            onChange={(value) => setSelectedFilters(prev => ({ ...prev, [key]: value as string }))} 
-                                            styles={{
-                                                dropdown: {
-                                                    maxHeight: '200px',
-                                                    overflowY: 'auto',
-                                                },
-                                                root: {
-                                                    marginBottom: '16px',
-                                                },
-                                            }}
-                                        />
-                                    )
-                                ))}
+                                {Object.keys(filters).map((key) => {
+                                if (key === 'indicator') {
+                                    return (
+                                    <Select
+                                        key={key}
+                                        label={key[0].toUpperCase() + key.slice(1)}
+                                        data={filters[key].map((item: any) => ({
+                                        label: item,
+                                        value: String(item),
+                                        }))}
+                                        value={selectedFilters[key] || filters[key]?.[0] || ''}
+                                        onChange={(value) =>
+                                        setSelectedFilters((prev) => ({ ...prev, [key]: value as string }))
+                                        }
+                                        styles={{
+                                        dropdown: {
+                                            maxHeight: '200px',
+                                            overflowY: 'auto',
+                                        },
+                                        root: {
+                                            marginBottom: '16px',
+                                        },
+                                        }}
+                                    />
+                                    );
+                                }
+                                if (key === 'province') {
+                                    return (
+                                    <CheckboxGroup
+                                        key={key}
+                                        label={key[0].toUpperCase() + key.slice(1)}
+                                        value={Array.isArray(selectedFilters[key]) ? selectedFilters[key] : []}
+                                        onChange={(values) =>
+                                            setSelectedFilters((prev) => ({ ...prev, [key]: values }))
+                                        }
+                                    >
+                                        <div style={{ maxHeight: '436px', overflowY: 'auto' }}>
+                                        {filters[key].map((item: any) => (
+                                            <Checkbox.Card className={classes.checkbox} key={item} value={String(item)} >
+                                                <Group wrap="nowrap" align="flex-start">
+                                                    <Checkbox.Indicator />
+                                                    <div>
+                                                        <Text>{item}</Text>
+                                                    </div>
+                                                </Group>
+                                            </Checkbox.Card>
+                                        ))}
+                                        </div>
+                                    </CheckboxGroup>
+                                    );
+                                }
+                                return null; // Ignore other keys
+                                })}
                             </Paper>
                         </Grid.Col>
+
                         
                         {/* Main Content */}
                         <Grid.Col span={{ base: 12, sm: 9 }}>
@@ -122,9 +154,9 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
                                     ]}
                                 />
                                 
-                                {activeTab === 'map' && <Map data={filteredData} width="100%" height="500px" />}
-                                {activeTab === 'visualization' && <Visualization data={filteredData} width="100%" height="500px" />}
-                                {activeTab === 'data' && <DataTable data={filteredData} width="100%" height="500px" />}
+                                {activeTab === 'map' && <Map data={filteredData} width="100%" height="450px" />}
+                                {activeTab === 'visualization' && <Visualization data={filteredData} width="100%" height="450px" />}
+                                {activeTab === 'data' && <DataTable data={filteredData} width="100%" height="450px" />}
                             </Paper>
                         </Grid.Col>
                     </Grid>
