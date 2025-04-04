@@ -16,14 +16,14 @@ const Map: React.FC<MapProps> = ({ data, width = '100%', height = 500 }) => {
   const [hoveredProvince, setHoveredProvince] = useState<any | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
 
-  useEffect(() => {
-    console.log('Data:', data);
-    console.log('GeoJSON:', geojsonData);
-  }, [data]);
+  // useEffect(() => {
+  //   console.log('Data:', data);
+  //   console.log('GeoJSON:', geojsonData);
+  // }, [data]);
 
   useEffect(() => {
-    console.log('Hovered Province:', hoveredProvince);
-    console.log('Tooltip Position:', tooltipPosition);
+    // console.log('Hovered Province:', hoveredProvince);
+    // console.log('Tooltip Position:', tooltipPosition);
   }, [hoveredProvince, tooltipPosition]);
 
   const getColor = (value: number) => {

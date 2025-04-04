@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Group, Text, Checkbox, CheckboxGroup, Select, Box, Stack, Paper, SegmentedControl, Title, Grid, Alert } from '@mantine/core';
+import { Select, Box, Stack, Paper, SegmentedControl, Title, Grid, Alert } from '@mantine/core';
 import { IconMap, IconChartBar, IconTable } from '@tabler/icons-react';
 
 import Map from '../Map/Map';
@@ -26,7 +26,8 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
 
     useEffect(() => {
         const fetchTabData = async () => {
-            if (!selectedSeries) {
+            if (!selectedSeries || selectedSeries === '') {
+                setData([]);
                 return;
             }
             try {
@@ -61,6 +62,7 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
             const filtered = applyFilters(data, selectedFilters);
             setFilteredData(filtered);
         }
+        console.log("Data: ", data)
     }, [selectedFilters, data]);
 
     const applyFilters = (rawData: any[], currentFilters: Record<string, string>) => {
@@ -76,7 +78,7 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
 
     return (
         <Stack p="lg">
-            {data.length > 0 ? (
+            {data.length > 0 && selectedSeries !== '' ? (
                 <Box>
                     <Title order={3} className={classes.title}>{selectedSeries}</Title>
                     <Grid>
@@ -84,54 +86,29 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
                         <Grid.Col span={{ base: 12, sm: 3 }}>
                             <Paper p="md" shadow="sm" withBorder>
                                 {Object.keys(filters).map((key) => {
-                                if (key === 'indicator') {
+                                if (key === 'indicator' || key === 'province' || key === 'markets' || key === 'products') {
                                     return (
                                     <Select
                                         key={key}
                                         label={key[0].toUpperCase() + key.slice(1)}
                                         data={filters[key].map((item: any) => ({
-                                        label: item,
-                                        value: String(item),
+                                            label: item,
+                                            value: String(item),
                                         }))}
                                         value={selectedFilters[key] || filters[key]?.[0] || ''}
                                         onChange={(value) =>
                                         setSelectedFilters((prev) => ({ ...prev, [key]: value as string }))
                                         }
                                         styles={{
-                                        dropdown: {
-                                            maxHeight: '200px',
-                                            overflowY: 'auto',
-                                        },
+                                            dropdown: {
+                                                maxHeight: '200px',
+                                                overflowY: 'auto',
+                                            },
                                         root: {
                                             marginBottom: '16px',
                                         },
                                         }}
                                     />
-                                    );
-                                }
-                                if (key === 'province') {
-                                    return (
-                                    <CheckboxGroup
-                                        key={key}
-                                        label={key[0].toUpperCase() + key.slice(1)}
-                                        value={Array.isArray(selectedFilters[key]) ? selectedFilters[key] : []}
-                                        onChange={(values) =>
-                                            setSelectedFilters((prev) => ({ ...prev, [key]: values }))
-                                        }
-                                    >
-                                        <div style={{ maxHeight: '436px', overflowY: 'auto' }}>
-                                        {filters[key].map((item: any) => (
-                                            <Checkbox.Card className={classes.checkbox} key={item} value={String(item)} >
-                                                <Group wrap="nowrap" align="flex-start">
-                                                    <Checkbox.Indicator />
-                                                    <div>
-                                                        <Text>{item}</Text>
-                                                    </div>
-                                                </Group>
-                                            </Checkbox.Card>
-                                        ))}
-                                        </div>
-                                    </CheckboxGroup>
                                     );
                                 }
                                 return null; // Ignore other keys

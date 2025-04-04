@@ -21,9 +21,9 @@ const Visualization: React.FC<VisualizationProps> = ({ data, width = '100%', hei
         tooltip: {
             trigger: 'axis',
         },
-        legend: {
-            data: [data[0]?.indicator || 'Indicator'],
-        },
+        // legend: {
+        //     data: [data[0]?.indicator || 'Indicator'],
+        // },
         toolbox: {
             feature: {
                 saveAsImage: {},

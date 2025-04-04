@@ -1,11 +1,11 @@
-import { Autocomplete, Title, Text, Stack, Box } from '@mantine/core';
+import { Select, Title, Text, Stack, Box } from '@mantine/core';
 import classes from './DataExplorerHeroSection.module.css';
 
 interface HeroSectionProps {
   title: string;
   subtitle: string;
   menuData: any;
-  onSelectSeries: (value: string) => void; // New prop
+  onSelectSeries: (value: string) => void;
 }
 
 export function DataExplorerHeroSection({ title, subtitle, menuData, onSelectSeries }: HeroSectionProps) {
@@ -14,11 +14,20 @@ export function DataExplorerHeroSection({ title, subtitle, menuData, onSelectSer
       <Stack>
         <Title order={1} className={classes.title}>CDRI Data Hub Explorer</Title>
         <Text size="xl" className={classes.description}>Explore Data and Visualizations with Natural Language</Text>
-        <Autocomplete
+        <Select
           label="Select Data Series"
           placeholder="Ask Anything..."
           data={menuData}
-          onChange={onSelectSeries} // Update selected value
+          onChange={(value) => {
+            if (value !== null) {
+              onSelectSeries(value);
+            }
+            else{
+              onSelectSeries('');
+            }
+          }}
+          searchable
+          clearable
         />
       </Stack>
     </Box>
