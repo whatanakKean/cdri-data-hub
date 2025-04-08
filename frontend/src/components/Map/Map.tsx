@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
-import geojsonData from '../../assets/geojson/geoBoundaries-KHM-ADM1_simplified.json';
+import geojsonProvinceData from '../../assets/geojson/geoBoundaries-KHM-ADM1_simplified.json';
+import geojsonCountryData from '../../assets/geojson/countries.json';
 import 'leaflet/dist/leaflet.css';
 import { GeoJsonObject } from 'geojson';
-import Visualization from '../Visualization/Visualization';
+import MapTooltip from './MapTooltip';
 
 interface MapProps {
   data: any[];
@@ -13,33 +14,60 @@ interface MapProps {
 }
 
 const Map: React.FC<MapProps> = ({ data, width = '100%', height = 500 }) => {
-  const [hoveredProvince, setHoveredProvince] = useState<any | null>(null);
+  const [hoveredFeature, setHoveredFeature] = useState<any | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
 
-  // useEffect(() => {
-  //   console.log('Data:', data);
-  //   console.log('GeoJSON:', geojsonData);
-  // }, [data]);
+  const typedProvinceData: GeoJsonObject = geojsonProvinceData as GeoJsonObject;
+  const typedCountryData: GeoJsonObject = geojsonCountryData as GeoJsonObject;
 
-  useEffect(() => {
-    // console.log('Hovered Province:', hoveredProvince);
-    // console.log('Tooltip Position:', tooltipPosition);
-  }, [hoveredProvince, tooltipPosition]);
+  // Determine map level and preprocess data
+  const isProvinceLevel = data.some(item => item.province && item.province !== null);
+  const geojsonData: GeoJsonObject = isProvinceLevel ? typedProvinceData : typedCountryData;
+  const keyProperty = isProvinceLevel ? 'province' : 'markets';
+
+  // Create a lookup map that stores data for all years
+  const dataLookup = useMemo(() => {
+    const lookup: { [key: string]: any[] } = {};
+    data.forEach(item => {
+      const key = item[keyProperty];
+      if (key) {
+        if (!lookup[key]) {
+          lookup[key] = [];
+        }
+        lookup[key].push(item); // Store all data points (including year) for this key
+      }
+    });
+    console.log("Data Lookup:", lookup);
+    return lookup;
+  }, [data, keyProperty]);
+
+  // Find min and max values across all years
+  const values = data.map(item => item.indicator_value).filter(v => v !== undefined);
+  const minValue = values.length ? Math.min(...values) : 0;
+  const maxValue = values.length ? Math.max(...values) : 0;
 
   const getColor = (value: number) => {
-    return value > 100000 ? '#006400' :
-           value > 50000  ? '#008000' :
-           value > 20000  ? '#228B22' :
-           value > 10000  ? '#2E8B57' :
-           value > 5000   ? '#3CB371' :
-           value > 1000   ? '#90EE90' :
-                            '#98FF98';
+    if (!value || maxValue === minValue) return '#98FF98';
+    const ratio = (value - minValue) / (maxValue - minValue);
+    if (ratio < 0.5) {
+      const r = Math.round(152 + (60 - 152) * (ratio * 2));
+      const g = Math.round(255 + (179 - 255) * (ratio * 2));
+      const b = Math.round(152 + (113 - 152) * (ratio * 2));
+      return `rgb(${r}, ${g}, ${b})`;
+    } else {
+      const r = Math.round(60 + (0 - 60) * ((ratio - 0.5) * 2));
+      const g = Math.round(179 + (100 - 179) * ((ratio - 0.5) * 2));
+      const b = Math.round(113 + (0 - 113) * ((ratio - 0.5) * 2));
+      return `rgb(${r}, ${g}, ${b})`;
+    }
   };
 
   const styleFeature = (feature: any) => {
-    const provinceName = feature.properties.shapeName;
-    const provinceData = data.find(item => item.province === provinceName);
-    const value = provinceData ? provinceData.indicator_value : 0;
+    const featureName = feature.properties.shapeName;
+    const featureData = dataLookup[featureName];
+    // Use the most recent year's data for styling (or adjust logic as needed)
+    const latestData = featureData?.length ? featureData[featureData.length - 1] : null;
+    const value = latestData ? latestData.indicator_value : 0;
 
     return {
       fillColor: getColor(value),
@@ -55,8 +83,8 @@ const Map: React.FC<MapProps> = ({ data, width = '100%', height = 500 }) => {
     layer.on({
       mouseover: (e: L.LeafletMouseEvent) => {
         const layer = e.target;
-        const provinceName = feature.properties.shapeName;
-        const provinceData = data.find(item => item.province === provinceName);
+        const featureName = feature.properties.shapeName;
+        const featureData = dataLookup[featureName] || [];
 
         layer.setStyle({
           weight: 3,
@@ -66,7 +94,8 @@ const Map: React.FC<MapProps> = ({ data, width = '100%', height = 500 }) => {
 
         const { x, y } = e.containerPoint;
         setTooltipPosition({ x, y });
-        setHoveredProvince(provinceData || { province: provinceName, indicator_value: 'N/A' });
+        // Pass all years' data to the tooltip
+        setHoveredFeature(featureData.length ? featureData : [{ [keyProperty]: featureName, indicator_value: 'N/A' }]);
       },
       mouseout: (e: L.LeafletMouseEvent) => {
         const layer = e.target;
@@ -75,11 +104,17 @@ const Map: React.FC<MapProps> = ({ data, width = '100%', height = 500 }) => {
           color: 'white',
           dashArray: '3',
         });
-        setHoveredProvince(null);
+        setHoveredFeature(null);
         setTooltipPosition(null);
       },
     });
   };
+
+  // Dynamically calculate map bounds
+  const bounds = useMemo(() => {
+    const geoJsonLayer = L.geoJSON(geojsonData);
+    return geoJsonLayer.getBounds();
+  }, [geojsonData]);
 
   return (
     <div
@@ -89,50 +124,39 @@ const Map: React.FC<MapProps> = ({ data, width = '100%', height = 500 }) => {
         width: width,
         height: height,
         zIndex: 1,
-        overflow: 'visible', // Changed to visible to prevent clipping
+        overflow: 'visible',
       }}
     >
-      <MapContainer
-        center={[12.5657, 104.9910]}
-        zoom={7}
-        scrollWheelZoom={false}
-        style={{
-          height: '100%',
-          width: '100%',
-          position: 'relative',
-          zIndex: 0,
-        }}
-      >
-        <TileLayer
-          url="http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        />
-        <GeoJSON
-          data={geojsonData as GeoJsonObject}
-          style={styleFeature}
-          onEachFeature={onEachFeature}
-        />
-      </MapContainer>
-
-      {hoveredProvince && tooltipPosition && (
-        <div
+      {data.length === 0 ? (
+        <div>No data available to display the map.</div>
+      ) : (
+        <MapContainer
+          bounds={bounds}
+          scrollWheelZoom={true}
           style={{
-            position: 'absolute',
-            left: tooltipPosition.x + 10,
-            top: tooltipPosition.y + 10,
-            zIndex: 1000,
-            background: 'white', // Added for visibility
-            border: '1px solid #ccc', // Added for visibility
-            borderRadius: '3px',
-            padding: '5px',
-            pointerEvents: 'none',
+            height: '100%',
+            width: '100%',
+            position: 'relative',
+            zIndex: 0,
           }}
         >
-          <Visualization
-            data={[hoveredProvince]}
-            width="250px"
-            height="250px"
+          <TileLayer
+            url="http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
           />
-        </div>
+          <GeoJSON
+            data={geojsonData as GeoJsonObject}
+            style={styleFeature}
+            onEachFeature={onEachFeature}
+          />
+        </MapContainer>
+      )}
+
+      {hoveredFeature && tooltipPosition && (
+        <MapTooltip
+          hoveredFeature={hoveredFeature}
+          tooltipPosition={tooltipPosition}
+          keyProperty={keyProperty}
+        />
       )}
     </div>
   );

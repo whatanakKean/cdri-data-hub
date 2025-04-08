@@ -8,8 +8,13 @@ interface DataTableProps {
 }
 
 const DataTable: React.FC<DataTableProps> = ({ data, width = '100%', height = 500 }) => {
-  // Dynamically create column headers from the first data object
-  const headers = data && data.length > 0 ? Object.keys(data[0]) : [];
+  // Columns to exclude
+  const excludedColumns = ['id', 'series_code', 'subsector_1', 'subsector_2', 'tag'];
+
+  // Dynamically create column headers from the first data object, excluding certain keys
+  const headers = data && data.length > 0 
+    ? Object.keys(data[0]).filter(key => !excludedColumns.includes(key)) 
+    : [];
 
   // Format header names (e.g., "first_name" -> "First Name")
   const formattedHeaders = headers.map(key => 
@@ -32,11 +37,10 @@ const DataTable: React.FC<DataTableProps> = ({ data, width = '100%', height = 50
       style={{
         width,
         height,
-        paddingTop: 20,
       }}
     >
       <Table
-        withTableBorder
+        striped
         withColumnBorders
         highlightOnHover
         horizontalSpacing="md"

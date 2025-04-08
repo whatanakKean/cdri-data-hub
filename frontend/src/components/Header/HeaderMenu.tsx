@@ -161,7 +161,7 @@ export function HeaderMenu() {
           </Group>
 
           <Group visibleFrom="sm">
-            <Button>Log in</Button>
+            <Button variant="outline" color="white">Log in</Button>
             {/* <ActionIcon
               onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
               variant="default"

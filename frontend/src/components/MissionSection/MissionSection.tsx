@@ -17,21 +17,21 @@ import { motion } from 'framer-motion';
 
 const mockdata = [
   {
-    title: 'Extreme performance',
+    title: 'Insight',
     description:
-      'This dust is actually a powerful poison that will even make a pro wrestler sick, Regice cloaks itself with frigid air of -328 degrees Fahrenheit',
+      'Provide accessible, high-quality knowledge and insights on various sectors in Cambodia.',
     icon: IconGauge,
   },
   {
-    title: 'Privacy focused',
+    title: 'Interactive Tools',
     description:
-      'People say it can run at the same speed as lightning striking, Its icy body is so cold, it will not melt even if it is immersed in magma',
+      'Support decision-making through easy-to-use data visualization tools.',
     icon: IconUser,
   },
   {
-    title: 'No third parties',
+    title: 'Collaboration',
     description:
-      'They’re popular, but they’re rare. Trainers who show them off recklessly may be targeted by thieves',
+      'Foster collaboration among researchers, policymakers, and private sector.',
     icon: IconCookie,
   },
 ];
@@ -62,9 +62,8 @@ export function MissionSection() {
         Integrate effortlessly with any technology stack
       </Title>
 
-      <Text c="dimmed" className={classes.description} ta="center" mt="md">
-        Every once in a while, you’ll see a Golbat that’s missing some fangs. This happens when
-        hunger drives it to try biting a Steel-type Pokémon.
+      <Text className={classes.description} ta="center" mt="md">
+        CDRI Data Hub is a centralized repository for research data, offering reliable knowledge and insights across various sectors in Cambodia. It supports evidence-based decision-making by providing datasets, visualization tools, and knowledge tailored to researchers, policymakers, and private sector.
       </Text>
 
         <motion.section

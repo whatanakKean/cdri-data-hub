@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Box, Stack, Paper, SegmentedControl, Title, Grid, Alert } from '@mantine/core';
+import { Text, Divider, Select, Box, Stack, Paper, SegmentedControl, Title, Grid, Alert } from '@mantine/core';
 import { IconMap, IconChartBar, IconTable } from '@tabler/icons-react';
 
 import Map from '../Map/Map';
@@ -17,6 +17,7 @@ interface InsightContentProps {
 const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selectedSector }) => {
     const [activeTab, setActiveTab] = useState("map");
     const [data, setData] = useState<any[]>([]);
+    const [mapData, setMapData] = useState<any[]>([]);
     const [filteredData, setFilteredData] = useState<any[]>([]);
     const [filters, setFilters] = useState<any>({});
     const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({
@@ -61,15 +62,28 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
         if (data.length > 0) {
             const filtered = applyFilters(data, selectedFilters);
             setFilteredData(filtered);
+
+            const mapFiltered = applyMapFilters(data, selectedFilters);
+            setMapData(mapFiltered);
         }
-        console.log("Data: ", data)
     }, [selectedFilters, data]);
 
     const applyFilters = (rawData: any[], currentFilters: Record<string, string>) => {
         return rawData.filter(item =>
             Object.entries(currentFilters).every(([key, value]) => {
                 if (key === 'year') return true;
+                // if (key === 'province') return true;
+                if (!item[key]) return true;
+                return String(item[key]) === value;
+            })
+        );
+    };
+    const applyMapFilters = (rawData: any[], currentFilters: Record<string, string>) => {
+        return rawData.filter(item =>
+            Object.entries(currentFilters).every(([key, value]) => {
+                if (key === 'year') return true;
                 if (key === 'province') return true;
+                if (key === 'markets') return true;
                 if (!item[key]) return true;
                 return String(item[key]) === value;
             })
@@ -80,13 +94,34 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
         <Stack p="lg">
             {data.length > 0 && selectedSeries !== '' ? (
                 <Box>
-                    <Title order={3} className={classes.title}>{selectedSeries}</Title>
+                    <Box>
+                        <Grid align="center" justify="space-between">
+                            <Grid.Col span="auto">
+                            <Title order={3} className={classes.title}>
+                                {selectedSeries}
+                            </Title>
+                            <Text>{selectedSector}</Text>
+                            </Grid.Col>
+                            <Grid.Col span="content">
+                            <SegmentedControl
+                                value={activeTab}
+                                onChange={setActiveTab}
+                                data={[
+                                { label: <><IconMap size={12} /> Map</>, value: 'map' },
+                                { label: <><IconChartBar size={12} /> Visualization</>, value: 'visualization' },
+                                { label: <><IconTable size={12} /> Data View</>, value: 'data' },
+                                ]}
+                            />
+                            </Grid.Col>
+                        </Grid>
+                    </Box>
+                    <Divider my="sm" />
                     <Grid>
                         {/* Filter Panel */}
                         <Grid.Col span={{ base: 12, sm: 3 }}>
-                            <Paper p="md" shadow="sm" withBorder>
+                            <Paper p="md" withBorder>
                                 {Object.keys(filters).map((key) => {
-                                if (key === 'indicator' || key === 'province' || key === 'markets' || key === 'products') {
+                                if (key !== 'year') {
                                     return (
                                     <Select
                                         key={key}
@@ -119,21 +154,12 @@ const InsightContent: React.FC<InsightContentProps> = ({ selectedSeries, selecte
                         
                         {/* Main Content */}
                         <Grid.Col span={{ base: 12, sm: 9 }}>
-                            <Paper p="md" shadow="sm" withBorder>
-                                <SegmentedControl
-                                    fullWidth
-                                    value={activeTab}
-                                    onChange={setActiveTab}
-                                    data={[
-                                        { label: <><IconMap size={12} /> Map</>, value: 'map' },
-                                        { label: <><IconChartBar size={12} /> Visualization</>, value: 'visualization' },
-                                        { label: <><IconTable size={12} /> Data View</>, value: 'data' },
-                                    ]}
-                                />
-                                
-                                {activeTab === 'map' && <Map data={filteredData} width="100%" height="450px" />}
+                            <Paper p="md" withBorder>                                
+                                {activeTab === 'map' && <Map data={mapData} width="100%" height="450px" />}
                                 {activeTab === 'visualization' && <Visualization data={filteredData} width="100%" height="450px" />}
                                 {activeTab === 'data' && <DataTable data={filteredData} width="100%" height="450px" />}
+                                
+                                {/* <Text>Data Source: Testing</Text> */}
                             </Paper>
                         </Grid.Col>
                     </Grid>

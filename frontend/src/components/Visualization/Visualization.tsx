@@ -53,14 +53,13 @@ const Visualization: React.FC<VisualizationProps> = ({ data, width = '100%', hei
                 name: data[0]?.indicator || 'Indicator',
                 type: 'line',
                 stack: 'Total',
-                areaStyle: {},
                 data: yAxisData,
             },
         ],
     };
     return(
         <div>
-            <ReactECharts option={option} opts={{ renderer: 'svg' }} style={{ width, height, paddingTop: 20 }} />
+            <ReactECharts option={option} opts={{ renderer: 'svg' }} style={{ width, height }} />
         </div>
     );
     
