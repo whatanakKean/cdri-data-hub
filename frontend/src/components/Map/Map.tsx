@@ -37,7 +37,6 @@ const Map: React.FC<MapProps> = ({ data, width = '100%', height = 500 }) => {
         lookup[key].push(item); // Store all data points (including year) for this key
       }
     });
-    console.log("Data Lookup:", lookup);
     return lookup;
   }, [data, keyProperty]);
 

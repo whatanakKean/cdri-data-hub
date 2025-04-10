@@ -124,6 +124,20 @@ class BaseModel(db.Model):
 
         # Convert data to dictionary format
         result = [entry.to_dict() for entry in query.all()]
+        
+        # Remove columns where all values are empty or None
+        if result:  # Only process if there are results
+            columns_to_remove = []
+            # Check each column
+            for column in result[0].keys():
+                # Check if all values in this column are empty/None
+                if all(not entry[column] or entry[column] == "" for entry in result):
+                    columns_to_remove.append(column)
+            
+            # Remove identified columns from all entries
+            for entry in result:
+                for column in columns_to_remove:
+                    del entry[column]
 
         # Specify the columns you want to retrieve unique values from
         exclude_column = ['sector', 'subsector_1', 'subsector_2', 'id', 'indicator_value', 'series_code', 'series_name', 'source', 'latitude', 'longitude', 'indicator_unit', 'tag']
