@@ -8,6 +8,7 @@ from flask_restx import Api, Resource, fields
 import jwt
 import json
 import google.generativeai as genai
+import re
 
 from .models import db, Users, JWTTokenBlocklist, EducationData, AgricultureData, EconomicData
 from .config import BaseConfig
@@ -15,6 +16,7 @@ import requests
 from collections import defaultdict
 
 rest_api = Api(version="1.0", title="CDRI Data Hub API")
+genai.configure(api_key=BaseConfig.GOOGLE_API_KEY)
 
 
 """
@@ -110,18 +112,25 @@ class GenerateChat(Resource):
 
             # Prepare prompt for Gemini
             prompt = f"""
-            You are an expert in generating ECharts configuration code for charts. Based on the user's query, generate an ECharts option object as valid JSON, compatible with echarts-for-react. Include sample data since no external data is provided. Return only the JSON object, no explanations or extra text.
+            You are an expert in generating ECharts configuration code for charts. Based on the user's query, generate an ECharts option object as a valid JSON string, compatible with echarts-for-react. Include sample data since no external data is provided. Return ONLY the JSON object as a string, without markdown (e.g., no ```json or ```), without explanations, and without any extra text or whitespace outside the JSON.
 
             User Query:
             {query}
             """
 
             # Call Gemini API
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel('gemini-2.0-flash')
             response = model.generate_content(prompt)
 
             # Parse and validate the generated ECharts code
-            chart_config = json.loads(response.text.strip())
+            response_text = response.text.strip()
+            json_pattern = r'```json\s*(.*?)\s*```'
+            match = re.match(json_pattern, response_text, re.DOTALL)
+            if match:
+                json_str = match.group(1).strip()
+            else:
+                json_str = response_text
+            chart_config = json.loads(json_str)
 
             return {
                 "success": True,

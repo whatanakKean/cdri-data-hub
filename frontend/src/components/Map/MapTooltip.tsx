@@ -14,10 +14,6 @@ interface MapTooltipProps {
 const MapTooltip: React.FC<MapTooltipProps> = ({ hoveredFeature, tooltipPosition, keyProperty }) => {
   if (!hoveredFeature || !tooltipPosition) return null;
 
-  useEffect(()=> {
-    console.log(hoveredFeature);
-  }, []);
-
   return (
     <div
       style={{

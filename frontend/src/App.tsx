@@ -9,6 +9,7 @@ import { FooterMenu } from './components/Footer/FooterMenu';
 import { NotFound } from './components/NotFound/NotFound';
 import DataBySeries from './pages/DataBySeries/DataBySeries';
 import DataExplorer from './pages/DataExplorer/DataExplorer';
+import Chat from './pages/Chat/Chat';
 import { IconArrowUp } from '@tabler/icons-react';
 import { ActionIcon, Affix } from '@mantine/core';
 
@@ -26,6 +27,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/data-explorer" element={<DataExplorer />} />
+            <Route path="/chat" element={<Chat />} />
             <Route path="/*" element={<DataBySeries />} />
           </Routes>
           <FooterMenu />

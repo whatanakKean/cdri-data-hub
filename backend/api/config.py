@@ -6,6 +6,7 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 class BaseConfig():
     GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', "AIzaSyBlmLWja3QO1-mz5FOEp-3FrwraYu_jzL0")
     SECRET_KEY = os.getenv('SECRET_KEY', None)
     if not SECRET_KEY:
         SECRET_KEY = ''.join(random.choice( string.ascii_lowercase  ) for i in range( 32 ))
