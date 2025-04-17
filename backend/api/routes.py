@@ -6,6 +6,8 @@ from flask import request
 from flask_restx import Api, Resource, fields
 
 import jwt
+import json
+import google.generativeai as genai
 
 from .models import db, Users, JWTTokenBlocklist, EducationData, AgricultureData, EconomicData
 from .config import BaseConfig
@@ -38,6 +40,10 @@ query_model = rest_api.model('QueryModel', {
     'series_name': fields.String(required=False, description="Series Name"),
     'subsector_1': fields.String(required=False, description="Subsector 1"),
     'subsector_2': fields.String(required=False, description="Subsector 2"),
+})
+
+chat_model = rest_api.model('ChatModel', {
+    'query': fields.String(required=True, description="Natural language description of the chatbot (e.g., 'Generate a line graph with sales data')")
 })
 
 
@@ -86,6 +92,46 @@ def token_required(f):
 """
     Flask-Restx routes
 """
+
+@rest_api.route('/api/chat')
+class GenerateChat(Resource):
+    """
+    Generates an ECharts configuration for testing based on a natural language query.
+    Requires JWT authentication.
+    """
+    @rest_api.expect(chat_model, validate=True)
+    def post(self):
+        try:
+            data = rest_api.payload
+            query = data.get('query', '')
+
+            if not query:
+                return {"success": False, "msg": "No query provided"}, 400
+
+            # Prepare prompt for Gemini
+            prompt = f"""
+            You are an expert in generating ECharts configuration code for charts. Based on the user's query, generate an ECharts option object as valid JSON, compatible with echarts-for-react. Include sample data since no external data is provided. Return only the JSON object, no explanations or extra text.
+
+            User Query:
+            {query}
+            """
+
+            # Call Gemini API
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(prompt)
+
+            # Parse and validate the generated ECharts code
+            chart_config = json.loads(response.text.strip())
+
+            return {
+                "success": True,
+                "chartConfig": chart_config
+            }, 200
+
+        except json.JSONDecodeError:
+            return {"success": False, "msg": "Invalid ECharts configuration generated"}, 500
+        except Exception as e:
+            return {"success": False, "msg": str(e)}, 500
 
 # Define the resource class to handle the GET request
 @rest_api.route('/api/query-data')

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import geojsonProvinceData from '../../assets/geojson/geoBoundaries-KHM-ADM1_simplified.json';
@@ -67,6 +67,8 @@ const Map: React.FC<MapProps> = ({ data, width = '100%', height = 500 }) => {
     // Use the most recent year's data for styling (or adjust logic as needed)
     const latestData = featureData?.length ? featureData[featureData.length - 1] : null;
     const value = latestData ? latestData.indicator_value : 0;
+    
+    console.log("Testing: ",latestData);
 
     return {
       fillColor: getColor(value),

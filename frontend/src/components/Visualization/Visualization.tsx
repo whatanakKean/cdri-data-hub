@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'; // Replace useEffect with useMemo for clarity
+import React, { useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { EChartsOption, LineSeriesOption } from 'echarts';
 
@@ -19,11 +19,6 @@ interface VisualizationProps {
 }
 
 const Visualization: React.FC<VisualizationProps> = ({ selectedFilter, data, width = '100%', height = 500 }) => {
-  // Log updates for debugging (optional, can remove later)
-  // useEffect(() => {
-  //   console.log("Viz Filter: ", selectedFilter);
-  //   console.log("Viz Data: ", data);
-  // }, [selectedFilter, data]); // Include data in dependencies
 
   // Use useMemo to ensure option is recalculated only when dependencies change
   const option: EChartsOption = useMemo(() => {
